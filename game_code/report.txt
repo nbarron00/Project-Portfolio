@@ -1,0 +1,128 @@
+1) Description of High-Level functions
+
+StudentWorld::init():
+{
+declare a stringstream representing level number
+	format levelNumber stringstream
+	if level > 99
+		return that player won
+if level file formatted incorrectly
+	return invalid level to Gameworld
+if level file not found
+	return that player has won
+
+for every row of the level file
+	for every column level file
+		switch(contents of level file at [row, column])
+		
+		case(wall): add wall into world at (row, col) and break
+		case(penelope): add penelope into world at (row, col) and break
+		case(citizen): add citizen into world at (row, col) and break
+		case(dumb zombie): add dumb zombie into world at (row, col) and break
+		case(smart zombie): add wall into world at (row, col) and break
+		case(exit): add exit into world at (row, col) and break
+		case(vaccine goodie): add vaccine goodie into world at (row, col) and break
+		case(gascan goodie): add gascan goodie into world at (row, col) and break
+		case(landmine goodie): add landmine goodie into world at (row, col) and break
+		case(pit): add pit into world at (row, col) and break
+
+return continue game
+}
+
+
+StudentWorld::move()
+{
+if penelope is dead
+	decrement player lives
+	return that player died
+declare and format play score stringstream
+declare and format gameText stringstream
+print gameText onto screen
+
+ask penelope to do something
+for every actor in StudentWorld
+	if actor pointer is not a nullptr
+		tell actor to do something
+if the level is complete
+	play sound that level is over
+	return the player won level
+
+return for the player to continue the level
+}
+
+StudentWorld::cleanUp()
+{
+for every Actor in StudentWorld
+	if actor has not yet been deleted
+		delete the actor
+pop every item from the vector contining Actor pointers
+set actor count to 0 and level complete status to false
+}
+
+StudentWorld::collidesWallOrExit():
+this function checks if the input x and y coordinate collide with a wall or and exit and returns a bool whether is did or not. This function is mainly designed to be used by flames, so that the player will not shoot flames through a wall or exit (as specified by the spec) when using the flamethrower 
+
+StudentWorld::collides_human()
+returns true if the input x, y coordinates collide with a human in the StudentWorld object. runs through every object in student world to see if the x,y coordinates collide withing the boundries of the object
+
+StudentWorld::collides()
+returns if the input x,y coordinates collised with something that blocks movement
+
+StudentWorld::citizensExit()
+called by the the Exit's doSomething function that goes through all the actors in Gameworld, and if a citizen overlaps with the exit parameter, then the citizen is saved (set to dead and the user recieves points). If penelope overlaps wiht the exit and there are not citizens remaining in the level, the Gameworld is told that the level is complete
+
+StudentWorld::collides_vomit()
+called by all humans (citizens and humans) and chekcs if the input x and y coordinates collides with vomit: if so it returns true. Otherwise this function returns false
+
+StudentWorld::nearestZombie()
+provides the caller with coordinates and distance to the nearest zombie object in the world, and a special case if none exist. Used by citizens to assist in determining their movement
+
+StudentWorld::nearestHuman()
+provides the called with distance and coordinates to the nearest human object. This function is called by the citizens to help determine their movement patterns
+
+StudentWorld::addActor()
+adds an actor tot he Studentworld object. used during StudentWorlds init() function, and every time a flame, goodie, linemine, zombie, or pit needs to be added to the world during gameplay.
+
+StudentWorld::citizensLeft()
+returns true if there are any citizens life in the world. Otherwise it simply returns false. This function is used by exit to determine if penelope overlapping with the exit object will end the level or not
+
+StudentWorld::overlaps()
+if the actor* parameter overlaps with the input x and y coordinates, the function returns true
+
+StudentWorld::activateMineIfCollides()
+this function is called by the Landmine object. It has the Gameworld go through every Actor, and if the actor is an actor which activates the landmine, and that same actor overlaps with the landmine, the landmine is activated. The landmine class only calles this function when the landmine is active, so this does not check whether or not the Landmine is active
+
+StudentWorld::killIfCollides()
+this function kills anything that Fire/Pits kill if it collides with the ActivatingObject* parameter. Called by both flame and pit's doSomething methods for their functionality
+
+StudentWorld::overlapsAnything()
+checks if the input coordinates overlap with any actor in the level. called by the dumb zombies destructior when it happens to find a spot to drop a vaccine goodie (1/10 of the time)
+
+Actor::isZombie()
+Actor::isSmartzombie()
+Actor::isHuman()
+Actor::isPenelope()
+Actor::isExit()
+Actor::isVomit()
+Actor::isWall()
+Actor::isMine()
+Actor::isGoodie()
+Actor::isFlame()
+
+Each of these funciton is declared virtual, since for each function. if returns false for every base class besides one. This means the virtual function only needs to be redefined a single time. How efficient!
+
+Actor::worldPtr()
+returns a pointer to the StudentWorld that the Actor lives in. Needed by many classes for various things
+
+2) functionality I failed to finish:
+
+When the player completes the game, the program crashes instead of informing the player that they won and then ending. I have a switch statement in StudentWorlds init() method that checks if the next level file exists, but apparently it does not work correctly.
+
+3)
+
+I chose that zombies will go over exits. Otherwise everyting was pretty much based off of the Spec.
+
+4)
+
+I played the game numerous times to check for the functionality of every actor/ objects.
+

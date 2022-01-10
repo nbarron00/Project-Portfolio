@@ -1,0 +1,35 @@
+NAME: Nuutti Barron
+EMAIL: nuuttibarron@gmail.com
+UID: 805205422
+
+High-Level Design:
+
+This server-client program implements a Go-Back-N transport layer
+protocol mechanism in order to complete reliable data transfer (over a
+network which drops packets). There is no guarentee for data integrity,
+but this is a best-effort system.
+    The client initiates a connection with the server. They undergo a
+three-way handshake (similar to how it is does in TCP), and the client
+buffers data from the given file, which it then sends to the server in
+UDP packets. The server writes the payload of each packet to a new file
+in order, and sends acknowledgements to the clients that it has written
+up to a certain, cumulative point in the file. If packets are dropped, there
+is a timer implemented so that the client can retransmit packets what have not
+been acknowledged for 0.5 seconds. Once all the data is sent, written to the
+server file, and acknowledged by the client, the client initiates 4-way
+shutdown with the server.
+
+Problems I ran into:
+
+The first point in which I struggeled was accurately sending all the header
+information between the server and the client. Initially, I tried to take an
+approach in which I stored the individual bytes (by left/right shifting >>/<<
+and using binary operators) into the packet header, but I found this to be
+unecessarily complex. Instead, I simply stored each value as an unsigned 16-bit
+integer, and using C's support of typecasting to make it much easier.
+	 The other major issue I have caused me a good amount of frusturation
+and time to discover, but ultimately just came down to undesireable side effects
+of a signed to unsigned '<' comparision, which was simply fixed. It made it seem
+as if the server recieved the last payload-carrying buffer twice without the client
+having sent it more than once, but once I found the bug, it was easy to see why
+it was happening and how to fix it.

@@ -1,0 +1,65 @@
+NAME: Nuutti Barron
+EMAIL: nuuttibarron@gmail.com
+UID: 805205422
+
+High Level Design:
+
+This is a basic server-client model HTTP server. Upon
+establishing a TCP socket connection with a host (uses
+port 9007), the server waits for input from the socket,
+expecting it to be in the form of an HTTP GET request.
+The server parses this request to determine the file
+being requested, opens the file, reads it into a buffer,
+and transmits the file to the client (encapsulated in an
+appropriately formed HTTP response message).
+
+This HTTP server is only correct when requesting files
+with filenames less than 21 characters long and alphanumeric
+(aside from a possible period '.'), for files 2 MB in
+size or less that are in the same directory as the server.
+
+
+
+Problems I Ran Into:
+
+The biggest problem I ran into during this project was
+when I reached the point in which I could correctly
+deliver text files, but not photographs (or binary data).
+In attempting to debug the situation, I found that the
+server read the correct amount of data from the correct
+file, and transmitted (sent) the right number of bytes
+to the client, but the browser claimed that the data was
+incorrect.
+	What made the situation difficult to debug was
+the fact that you had to manually track how much data
+had actually been read from a non-text file after an
+fread(), or any corresponding operation. This was because
+the data was read into a buffer, but to verify the amount
+of file data in the buffer, you could not simply call
+sizeof(buffer), this output the size of the buffer, not
+how much file data was currently held in it. Similarly,
+you could not call strlen(buffer), because this would
+measure the length to the first '0' character, which
+usually encodes the end of a cstring, but in this case
+could very well be a part of the binary data in the file
+being read. For these same reasons it was difficult to
+verify that the data I had buffered was correct, because
+these reasons made it difficult to compare teh buffered
+data to the original file.
+      I (painstakingly) figured out that the issue was in
+my use of strcat() function call. I attempted to append the
+buffered file data to the end of the HTTP header lines (held
+in another buffer), and this corrupted the file data. The
+server worked when the header and entity body of the HTTP
+response message were sent independently in different calls
+to send() to the TCP socket.
+   Overall themost tedious part about this was parsing
+and manipulating strings and text in C, which does not
+employ the same string utilities and extensions languages
+like C++ use.
+
+
+Acknowledgements:
+
+I made heavy use of the C string standard library in
+when parsing and forming the HTTP messages involved.

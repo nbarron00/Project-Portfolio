@@ -1,0 +1,16 @@
+note: plink must be downloaded and its directory location must be added to the 
+user's $PATH directory, and the following files must be in the cwd in order for 
+these functions to work:
+
+snpdata.fam
+snpdata.bed
+snpdata.bim
+
+1) linear regression using plink. This will create file plink.assoc.linear.
+
+> plink --bfile snpdata --pheno phenotype.txt --linear --noweb
+
+2) transform binary to transposed text file. This will generate the following
+files: snpdata_12.tped, snpdata_12.tfam
+
+> plink --bfile snpdata --pheno phenotype.txt --recode12 --noweb --out snpdata_12
